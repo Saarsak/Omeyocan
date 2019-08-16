@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Omeyochat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overflow:auto;
+        }
+        .chat{
+		position:absolute;
+		height:750px;
+		width:100%;
+		}
+		.invia{
+		position;absolute;
+		width:100%;
+		height:50px;
+		}		
+		
+        body {
+            font: 14px monospace;
+            font-weight:700;
+            background:#14130e;
+        }
+        
+        form {
+            background: trasparent;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            border-color: gold;
+            border-top-style: solid;
+            border-top-width: 1px;
+        }
+        
+        form input {
+            border-style: solid;
+            border-width: 1px;
+			background:trasparent;
+            width: 85%;
+            margin-right: .5%;
+        }
+        
+        form button {
+            width: 9%;
+            background: rgb(130, 224, 255);
+            border: none;
+            padding: 10px;
+            margin-left: 2%;
+        }
+        
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            color:gold;
+			text-shadow:1px 1px 1px black;
+			display: flex;
+			flex-direction: column-reverse;
+        }
+        
+        #messages li {
+            padding: 5px 10px;
+            background:#090909;
+        }
+        
+        #messages li:nth-child(odd) {
+            background: #313131;
+        }
+    </style>
+    <script src="../../socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  </head>
+  <body>
+  <div class="esterno">
+    <ul id="messages"></ul>
+	<div class="invia">
+	<form action="/" method="POST" id="chatForm">
+      <input id="txt" autocomplete="off" autofocus="on" oninput="isTyping()" placeholder="Scrivi qui il messaggino..." /><button>Invia</button>
+    </form>
+	</div>
+	</div>
+    <script>
+	
+            var socket = io.connect('http://212.171.236.70:8080');
+            // Manda messaggio senza ricaricare la pagina
+            $('form').submit(function(e){
+                e.preventDefault(); // prevents page reloading
+                socket.emit('chat_message', $('#txt').val());
+                $('#txt').val('');
+                return false;
+            });
+
+            // append the chat text message
+            socket.on('chat_message', function(msg){
+                $('#messages').append($('<li>').html(msg));
+            });
+
+            // Vedi se sei online
+            socket.on('is_online', function(username) {
+                $('#messages').append($('<li>').html(username));
+            });
+			
+			socket.on('private', function(regole) {
+                $('#messages').append($('<li>').html(regole));
+            });
+			
+            // Dai username
+			do{
+				var username = prompt('Chi sei su Omeyocan? Non mentire che non si controlla');
+			}while(username.trim().length===0);
+			socket.emit('username', username);
+
+    </script>
+  </body>
+</html>
