@@ -95,7 +95,7 @@
                 return false;
             });
 
-            // append the chat text message
+            // aggiungi messaggio in chat
             socket.on('chat_message', function(msg){
                 $('#messages').append($('<li>').html(msg));
             });
